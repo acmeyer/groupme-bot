@@ -1,0 +1,15 @@
+
+service: groupmeBot
+
+provider:
+  name: aws
+  runtime: nodejs4.3
+  stage: dev
+  region: us-east-1
+  profile: cli-serverless-admin
+
+functions:
+  chat:
+    handler: handler.chat
+    events:
+      - http: post chat
