@@ -20,19 +20,27 @@ function receivedMessage(data) {
 
   // ignore the bots own messages, prevents infinite loop
   if (senderName !== botName && senderType !== 'bot') {
-    if (messageText) {
+    // only respond to messages about the bot
+    var botRegex = new RegExp(botName, "i");
+    if (messageText && botRegex.test(messageText)) {
       console.log('messageText', messageText);
       // If we receive a text message, check to see if it matches a keyword
       // and send back the example. Otherwise, just echo the text we received.
       switch (messageText) {
+        case "image":
+          sendImageMessage();
+          break;
+        case "location":
+          sendLocationMessage();
+          break;
         case 'keyword':
           sendKeywordMessage();
           break;
         default:
-          sendTextMessage(messageText);
+          sendMessage(messageText);
       }
     } else if (messageAttachments && messageAttachments.length > 0) {
-      sendTextMessage('Message with attachments received');
+      sendMessage('Message with attachments received');
     }
   }
 }
@@ -46,37 +54,43 @@ function sendKeywordMessage() {
   callSendAPI(messageData);
 }
 
-function sendTextMessage(messageText) {
+function sendImageMessage() {
+  var messageData = {
+    "bot_id": process.env.BOT_ID,
+    "text": "Hello world",
+    "attachments": [
+      {
+        "type"  : "image",
+        "url"   : "https://i.groupme.com/somethingsomething.large"
+      }
+    ]
+  }
+
+  callSendAPI(messageData);
+}
+
+function sendLocationMessage() {
+  var messageData = {
+    "bot_id": process.env.BOT_ID,
+    "text": "Hello world",
+    "attachments": [
+      {
+        "type"  : "location",
+        "lng"   : "40.000",
+        "lat"   : "70.000",
+        "name"  : "GroupMe HQ"
+      }
+    ]
+  }
+
+  callSendAPI(messageData)
+}
+
+function sendMessage(messageText) {
   var messageData =   {
     bot_id: process.env.BOT_ID,
     text: messageText
   };
-
-  // image
-  // {
-  //   "bot_id"  : "j5abcdefg",
-  //   "text"    : "Hello world",
-  //   "attachments" : [
-  //     {
-  //       "type"  : "image",
-  //       "url"   : "https://i.groupme.com/somethingsomething.large"
-  //     }
-  //   ]
-  // }
-
-  // location
-  // {
-  //   "bot_id"  : "j5abcdefg",
-  //   "text"    : "Hello world",
-  //   "attachments" : [
-  //     {
-  //       "type"  : "location",
-  //       "lng"   : "40.000",
-  //       "lat"   : "70.000",
-  //       "name"  : "GroupMe HQ"
-  //     }
-  //   ]
-  // }
 
   callSendAPI(messageData);
 }
